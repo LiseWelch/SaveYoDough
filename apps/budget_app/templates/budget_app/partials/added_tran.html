@@ -1,0 +1,38 @@
+<table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Description</th>
+                <th scope="col">Amount</th>
+                <th scope="col">To</th>
+                <th scope="col">From</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in transactions %}
+                <tr>
+                    <td>{{ t.created_at }}</td>
+                    <td>{{ t.t_type }} - {{ t.desc }}</td>
+                    {% load humanize %}
+                    <td>${{ t.amount|intcomma }}</td>
+                    {% if t.card_to %}
+                        <td>{{ t.card_to.name }}</td>
+                    {% elif t.account_to %}
+                        <td>{{ t.account_to.name }}</td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                    {% if t.card_from %}
+                        <td>{{ t.card_from.name }}</td>
+                    {% elif t.account_from %}
+                        <td>{{ t.account_from.name }}</td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                    <td>
+                            <a id="delete_tran" style="color: rgb(255,74,165);" href="javascript:tran_del('{{ t.id }}')">Delete</a> 
+                        </td>
+                </tr>
+            {% endfor %}
+        </tbody>

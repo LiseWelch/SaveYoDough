@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Login</title>
+        <meta charset="utf-8">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        {% load static %}
+        <script src="{% static 'login_app/js/root.js' %}"></script>
+        {% load static %}
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static 'login_app/img/favicon.png' %}">
+    </head>
+    <body style="background-image: url(https://image.freepik.com/free-vector/donuts-seamless-pattern-vector-illustration_8319-440.jpg); background-repeat: repeat; min-height: 100%; width: 100%;">
+        <div class="container-fluid p-0 m-0">
+            <nav class="navbar navbar-dark" style="background-image: linear-gradient(rgb(251, 248, 17),rgb(216, 203, 21)); border-bottom: 4px solid black; width: 101%;">
+                {% load static %}
+                <img src="{% static 'login_app/img/logo1.png' %}"  width="75" class="d-inline-block align-top my-1"alt="My image">  
+                <h2 class="mx-5">Register & Login</h2>
+            </nav>
+            <div class="row py-5 my-5">
+                <div class="col-5 container p-3 bg-white mx-auto" style="border: 3px solid black; border-radius: 25px; box-shadow: 5px 5px 5px black;">
+                    <div class="row align-items-start">
+                        <div class="col-5 container px-2">
+                            <h1 class="mb-2">Register</h1>
+                            {% if messages %}
+                                    {% for message in messages %}
+                                        {% if message.extra_tags == 'register' %}
+                                            <p {% if message.tags %} class="{{ message.tags }}" {% endif %} style="color: rgb(255,74,165);">{{ message }}</p>
+                                        {% endif %}
+                                    {% endfor %} 
+                                {% endif %}
+                            <form id="reg_form" class="ml-2" action="/register" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" id="check" value="{{ request.session.login_check }}">
+                                <div class="form-group row my-4">
+                                    <label for="first_name" class="col-sm-6 col-form-label">First Name</label>
+                                    <div class="col-sm-6"> 
+                                        <input type="text" id="firstname" class="form-control my-auto" name="first_name" value="{{ request.session.first_name }}">
+                                        <div id="firstname_err"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group row my-4">
+                                    <label for="last_name" class="col-sm-6 col-form-label">Last Name</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" id="lastname" class="form-control" name="last_name" value="{{ request.session.last_name }}">
+                                        <div id="lastname_err"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group row my-4">
+                                    <label for="username" class="col-sm-6 col-form-label">Username</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" id="username" class="form-control" name="username" value="{{ request.session.username }}">
+                                        <div id="username_err"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group row my-4">
+                                    <label for="email" class="col-sm-6 col-form-label">E-mail</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" id= "email" class="form-control" name="email" value="{{ request.session.email }}">
+                                        <div id="email_err"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group row my-4">
+                                    <label for="password" class="col-sm-6 col-form-label">Password</label>
+                                    <div class="col-sm-6">
+                                        <input type="password" id="password" class="form-control" name="password" value="{{ request.session.password }}">
+                                        <div id="password_err"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="confim" class="col-sm-6 col-form-label">Confirm Password</label>
+                                    <div class="col-sm-6">
+                                        <input type="password" id="confirm" class="form-control" name="confirm" value="{{ request.session.confirm }}">
+                                        <div id="confirm_err"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group row mt-4 mb-2">
+                                    <button type="submit" id="register" class="btn mx-auto text-white border border-dark" style="background-image: linear-gradient(rgb(253,164,196) 10%,rgb(255,74,165) 90%, rgb(253,164,196)); box-shadow: 2px 2px 2px black;">REGISTER</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-5 container-fluid">
+                            {% load static %}
+                                <img src="{% static 'login_app/img/logo3.png' %}"  width="250px" class="mx-5 mt-3 mb-2 p-1" alt="My image">  
+                            <div class="row align-items-end">
+                            <h1 class="col-sm-6">Login</h1>
+                            <div id="log_err" class="col-sm-6 mx-auto align-self-end">
+                                {% if messages %}
+                                    {% for message in messages %}
+                                        {% if message.extra_tags == 'login' %}
+                                            <p {% if message.tags %} class="{{ message.tags }}" {% endif %} style="color: rgb(255,74,165);">{{ message }}</p>
+                                        {% endif %}
+                                    {% endfor %} 
+                                {% endif %}
+                            </div>
+                            </div>
+                            <form id="log_form" action="/login" method="post">
+                                {% csrf_token %}
+                                <div class="form-group row my-3">
+                                    <label for="first_name" class="col-sm-6 col-form-label">E-mail or Username</label>
+                                    <div class="col-sm-6"> 
+                                        <input type="text" id="email/username" class="form-control" name="email_username">
+                                    </div>
+                                </div>
+                                <div class="form-group row my-3">
+                                    <label for="last_name" class="col-sm-6 col-form-label">Password</label>
+                                    <div class="col-sm-6">
+                                        <input type="password" id="login_pw" class="form-control" name="login_pw">
+                                    </div>
+                                </div>
+                                <div class="form-group row mt-4 mb-2">
+                                    <button type="submit" id="login" class="btn mx-auto text-white border border-dark" style="background-image: linear-gradient(rgb(253,164,196) 10%,rgb(255,74,165) 90%, rgb(253,164,196)); box-shadow: 2px 2px 2px black;">LOG IN</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

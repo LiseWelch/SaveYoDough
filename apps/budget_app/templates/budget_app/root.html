@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Save Yo Dough</title>
+        <meta charset="utf-8">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        {% load static %}
+        <script src="{% static 'budget_app/js/root.js' %}"></script>
+        {% load static %}
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static 'budget_app/img/favicon.png' %}">
+    </head>
+    <style>
+        tr:nth-child(even) {
+            background-color:rgba(109, 242, 254, 0.507);
+        }
+        thead {
+            background-color:rgba(109, 242, 254, 0.507);
+        }
+    </style>
+    <body style="background-image: url(https://image.freepik.com/free-vector/donuts-seamless-pattern-vector-illustration_8319-440.jpg);background-repeat: repeat; min-height: 100%; width: 100%; ">
+        <div class="container-fluid p-0 m-0">
+            <nav class="navbar" style="background-image: linear-gradient(rgb(251, 248, 17),rgb(216, 203, 21)); border-bottom: 4px solid black; width: 101%;">
+                {% load static %}
+                <img src="{% static 'budget_app/img/logo1.png' %}"  width="75" class="d-inline-block align-top my-1"alt="My image">  
+                <div class="row align-items-center">
+                <h2 class="text-right mx-4 mt-2">Welcome {{ user.first_name }}</h2>
+                <a href="http://localhost:8000/logout">
+                <button type="button" id="logout"class="btn my-3 mr-5 text-white border border-dark" style="background-image: linear-gradient(rgb(253,164,196) 10%,rgb(255,74,165) 60%, rgb(253,164,196)); box-shadow: 2px 2px 2px black;">LOG OUT</button>
+                </a>
+            </div>
+            </nav>
+            <div class="row p-5 justify-content-center">
+                <div id = "transactions" class="col-6 mx-4 px-4 pt-4 pb-2 bg-white" style="border: 3px solid black; border-radius: 25px; box-shadow: 5px 5px 5px black;">
+                    <h1>Transaction History</h1>
+                    <table class="table" id="tran_table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Description</th>
+                                <th scope="col">Amount</th>
+                                <th scope="col">To</th>
+                                <th scope="col">From</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for t in transactions %}
+                                <tr>
+                                    <td>{{ t.created_at }}</td>
+                                    <td>{{ t.t_type }} - {{ t.desc }}</td>
+                                    {% load humanize %}
+                                    <td>${{ t.amount|intcomma }}</td>
+                                    {% if t.card_to %}
+                                        <td>{{ t.card_to.name }}</td>
+                                    {% elif t.account_to %}
+                                        <td>{{ t.account_to.name }}</td>
+                                    {% else %}
+                                        <td> </td>
+                                    {% endif %}
+                                    {% if t.card_from %}
+                                        <td>{{ t.card_from.name }}</td>
+                                    {% elif t.account_from %}
+                                        <td>{{ t.account_from.name }}</td>
+                                    {% else %}
+                                        <td> </td>
+                                    {% endif %}
+                                    <td>
+                                        <a id="delete_tran" style="color: rgb(255,74,165);" href="javascript:tran_del('{{ t.id }}')">Delete</a> 
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div id="added_tran" class="col-sm-12 p-0 m-0"></div>
+                    <div id="deleted_tran" class="col-sm-12 p-0 m-0"></div>
+                    <div class="row align-items-end">
+                        <button type="button" id="add_t" class="btn mx-auto my-3 col-9 text-white border border-dark" style="background-image: linear-gradient(rgb(253,164,196) 10%,rgb(255,74,165) 60%, rgb(253,164,196)); box-shadow: 2px 2px 2px black;">ADD</button>   
+                    </div>
+                </div>
+                <div id = "add_transactions" class="col-6 mx-4 px-4 pt-4 pb-2 bg-white" style="border: 3px solid black; border-radius: 25px; box-shadow: 5px 5px 5px black;">
+                    <h1>Add Transaction</h1>
+                    <form id="t_form">
+                        {% csrf_token %}
+                        <div class="form group row my-4 mx-auto">
+                            <label for="desc" class="col-sm-3 col-form-label">Description</label>
+                            <div class="col-sm-8 mx-auto">
+                                <input type="text" id="desc" name="desc" class="form-control my-auto">
+                            </div>
+                        </div>
+                        <div class="form group row my-4 mx-auto">
+                            <label for="amount" class="col-sm-3 col-form-label">Amount</label>
+                            <div class="col-sm-8 mx-auto">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">$</div>
+                                    </div>
+                                    <input type="number" id="amount" name="amount" class="form-control my-auto" placeholder="0.00" step=".01">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form group row my-4 mx-auto">
+                                <label for="type" class="col-sm-3 col-form-label">Type</label>
+                                <div class="col-sm-8 mx-auto">
+                                    <select id="type" class="form-control" name="type">
+                                        <option> -- select --</option>
+                                        <option>Purchase</option>
+                                        <option>Payment</option>
+                                        <option>Deposit</option>
+                                        <option>Withdraw</option>
+                                    </select>
+                                </div>
+                        </div>
+                        <div id="purchase_options">
+                        </div>
+                        <div id="payment_options">
+                        </div>
+                        <div id="deposit_options">
+                        </div>
+                        <div id="withdraw_options">
+                        </div>
+                        <div class="form group row mt-4">
+                            <button type="submit" id="form_add_t" class="btn mx-auto col-9 text-white border border-dark" style="background-image: linear-gradient(rgb(253,164,196) 10%,rgb(255,74,165) 60%, rgb(253,164,196)); box-shadow: 2px 2px 2px black;">ADD</button>    
+                        </div>
+                    </form>
+                    <div class="row my-2 mx-auto text-center">
+                        <p id="cancel_t" class="col align-self-center text-center" style="color: rgb(255,74,165);cursor: pointer;">CANCEL</a> 
+                    </div>
+                </div>
+                <div class="col-5">
+                    <div id = "accounts" class="row mx-4 px-4 pt-4 pb-2 bg-white" style="border: 3px solid black; border-radius: 25px; box-shadow: 5px 5px 5px black;">
+                        <h1>Accounts</h1>
+                        <table class="table col-sm-12" id="account_table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Balance</th>
+                                    <th scope="col">Last Updated</th>
+                                    <th scope="col">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for a in accounts %}
+                                    <tr>
+                                        <td>{{ a.name }}</td>
+                                        {% load humanize %}
+                                        <td>${{ a.balance|intcomma }}</td>
+                                        <td>{{ a.updated_at }}</td>
+                                        <td>
+                                            <!-- <a id="edit_account" href="javascript:account_edit('{{ a.id }}')" style="color: rgb(255,74,165);">Edit</a> |   -->
+                                            <a id="delete_account" style="color: rgb(255,74,165);" href="javascript:account_del('{{ a.id }}')">Delete</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <div id="added_accounts" class="col-sm-12 p-0 m-0"></div>
+                        <div id="deleted_accounts" class="col-sm-12 p-0 m-0"></div>
+                        <button type="button" id="add_a" class="btn mx-auto my-3 col-9 text-white border border-dark" style="background-image: linear-gradient(rgb(253,164,196) 10%,rgb(255,74,165) 60%, rgb(253,164,196)); box-shadow: 2px 2px 2px black;">ADD</button>
+                    </div>
+                    <div id = "add_accounts" class="row mx-4 mb-5 px-4 pt-4 pb-2 bg-white" style="border: 3px solid black; border-radius: 25px; box-shadow: 5px 5px 5px black;">
+                        <div style="display: block;">
+                        <h1>Add Account</h1>
+                        </div>
+                        <form id="a_form" class="container">
+                            <div id="a_err"></div>
+                            {% csrf_token %}
+                            <div class="form group row my-4 mx-auto">
+                                <label for="account_name" class="col-sm-4 col-form-label">Name</label>
+                                <div class="col-sm-8 mx-auto">
+                                    <input type="text" id="account_name" name="account_name" class="form-control my-auto">
+                                    <div id="account_name_err"></div>
+                                </div>
+                            </div>
+                            <div class="form group row my-4 mx-auto">
+                                <label for="account_balance" class="col-sm-4 col-form-label">Balance</label>
+                                <div class="col-sm-8 mx-auto">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text">$</div>
+                                        </div>
+                                        <input type="number" id="account_balance" name="account_balance" class="form-control my-auto" pattern="[0-9]+.[0-9]{2}" placeholder="0.00" step=".01">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form group row mt-4">
+                                <button type="submit" id="form_add_a" class="btn mx-auto col-9 text-white border border-dark" style="background-image: linear-gradient(rgb(253,164,196) 10%,rgb(255,74,165) 60%, rgb(253,164,196)); box-shadow: 2px 2px 2px black;">ADD</button>    
+                            </div>
+                        </form>
+                        <div class="row my-2 mx-auto">
+                            <p id="cancel_a" class="col align-self-center" style="color: rgb(255,74,165);cursor: pointer;">CANCEL</a> 
+                        </div>
+                    </div>
+                    <div id = "edit_accounts"></div>
+                    <div id = "cards" class="row mx-4 mt-5 px-4 pt-4 pb-2 bg-white" style="border: 3px solid black; border-radius: 25px; box-shadow: 5px 5px 5px black;">
+                        <div style="display: block;">
+                        <h1>Cards</h1>
+                        </div>
+                        <table class="table col-sm-12" id="card_table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Balance</th>
+                                    <th scope="col">Last Updated</th>
+                                    <th scope="col">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for c in cards %}
+                                    <tr>
+                                        <td>{{ c.name }}</td>
+                                        {% load humanize %}
+                                        <td>${{ c.balance|intcomma }}</td>
+                                        <td>{{ c.updated_at }}</td>
+                                        <td>
+                                            <!-- <a id="edit_card" href="javascript:card_edit('{{ c.id }}')" style="color: rgb(255,74,165);">Edit</a> |  -->
+                                            <a id="delete_card" style="color: rgb(255,74,165);" href="javascript:card_del('{{ c.id }}')">Delete</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <div id="added_cards" class="col-sm-12 p-0 m-0"></div>
+                        <div id="deleted_cards" class="col-sm-12 p-0 m-0"></div>
+                        <button type="button" id="add_c" class="btn mx-auto my-3 col-9 text-white border border-dark" style="background-image: linear-gradient(rgb(253,164,196) 10%,rgb(255,74,165) 60%, rgb(253,164,196)); box-shadow: 2px 2px 2px black;">ADD</button>   
+                    </div>
+                    <div id = "add_cards" class="row mx-4 mt-5 px-4 pt-4 pb-2 bg-white" style="border: 3px solid black; border-radius: 25px; box-shadow: 5px 5px 5px black;">
+                        <h1>Add Card</h1>
+                        <form id="c_form" class="container">
+                            <div id="c_err"></div>
+                            {% csrf_token %}
+                            <div class="form group row my-4 mx-auto">
+                                <label for="card_name" class="col-sm-4 col-form-label">Name</label>
+                                <div class="col-sm-8 mx-auto">
+                                    <input type="text" id="card_name" name="card_name" class="form-control my-auto">
+                                    <div id="card_name_err"></div>
+                                </div>
+                            </div>
+                            <div class="form group row my-4 mx-auto">
+                                <label for="card_balance" class="col-sm-4 col-form-label">Balance</label>
+                                <div class="col-sm-8 mx-auto">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text">$</div>
+                                        </div>
+                                        <input type="number" id="card_balance" name="card_balance" class="form-control my-auto" pattern="[0-9]+.[0-9]{2}" placeholder="0.00" step=".01">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form group row mt-4">
+                                <button type="submit" id="form_add_c" class="btn mx-auto col-9 text-white border border-dark" style="background-image: linear-gradient(rgb(253,164,196) 10%,rgb(255,74,165) 60%, rgb(253,164,196)); box-shadow: 2px 2px 2px black;">ADD</button>    
+                            </div>
+                        </form>
+                        <div class="row my-2 mx-auto">
+                            <p id="cancel_c" class="col align-self-center" style="color: rgb(255,74,165);cursor: pointer;">CANCEL</a> 
+                        </div>
+                    </div>
+                    <div id = "edit_cards"></div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

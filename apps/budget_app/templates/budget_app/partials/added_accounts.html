@@ -1,0 +1,24 @@
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Balance</th>
+            <th scope="col">Last Updated</th>
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for a in accounts %}
+            <tr>
+                <td>{{ a.name }}</td>
+                {% load humanize %}
+                <td>${{ a.balance|intcomma }}</td>
+                <td>{{ a.updated_at }}</td>
+                <td>
+                    <!-- <a id="edit_account" href="javascript:account_edit('{{ a.id }}')" style="color: rgb(255,74,165);">Edit</a> | -->
+                    <a id="delete_account" style="color: rgb(255,74,165);" href="javascript:account_del('{{ a.id }}')">Delete</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

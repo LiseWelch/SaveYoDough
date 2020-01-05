@@ -1,0 +1,11 @@
+<div class="form group row my-4 mx-auto">
+    <label for="to" class="col-sm-3 col-form-label">From</label>
+    <div class="col-sm-8 mx-auto">
+        <select id="from" class="form-control" name="from">
+            <option>-- select --</option>
+            {% for g in accounts %}
+            <option>{{ g.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>

@@ -1,0 +1,47 @@
+{% load static %}
+        <script src="{% static 'budget_app/js/root.js' %}"></script>
+<div id = "cards" class="row mx-4 mt-5 px-4 pt-4 pb-2 bg-white" style="border: 3px solid black; border-radius: 25px; box-shadow: 5px 5px 5px black;">
+    <div style="display: block;">
+        <div class="row mx-1 align-items-center">
+        <h1>Cards</h1>
+        <div class="text-center mx-3 mt-2" id="edit_card_name_err"></div>
+        </div>
+    </div>
+    <table class="table col-sm-12" id="card_table">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Balance</th>
+                <th scope="col">Last Updated</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <input type="hidden" id="c_og_name" name="c_og_name" value="{{ card.name }}">
+            {% for c in cards %}
+            <tr>
+                {% if c.id == card.id %}
+                    <td><input type="text" id="edit_card_name" name="edit_card_name" value="{{ card.name }}" class="form-control-sm"></td>
+                    {% load humanize %}
+                    <td><input type="number" id="edit_card_balance" name="edit_card_balance" class="form-control-sm" pattern="[0-9]+.[0-9]{2}" placeholder="${{ c.balance|intcomma }}" step=".01"></td>
+                    <td>{{ c.updated_at }}</td>
+                    <td>
+                        <button type="button" id="card_save" class="btn btn-sm text-white border border-dark" style="background-image: linear-gradient(rgb(253,164,196) 10%,rgb(255,74,165) 60%, rgb(253,164,196)); box-shadow: 2px 2px 2px black;">SAVE</button>
+                    </td>
+                {% else %}
+                        <td>{{ c.name }}</td>
+                        {% load humanize %}
+                        <td>${{ c.balance|intcomma }}</td>
+                        <td>{{ c.updated_at }}</td>
+                        <td>
+                            <a id="edit_card" href="javascript:card_edit('{{ c.id }}')" style="color: rgb(255,74,165);">Edit</a> | 
+                            <a id="delete_card" style="color: rgb(255,74,165);" href="javascript:card_del('{{ c.id }}')">Delete</a>
+                        </td>
+                {% endif %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>  
+</div>
+
+

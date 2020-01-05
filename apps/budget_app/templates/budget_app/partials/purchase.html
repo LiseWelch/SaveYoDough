@@ -1,0 +1,14 @@
+<div class="form group row my-4 mx-auto">
+        <label for="on" class="col-sm-3 col-form-label">On</label>
+        <div class="col-sm-8 mx-auto">
+            <select id="on" class="form-control" name="on">
+                <option>-- select --</option>
+                {% for x in accounts %}
+                <option>{{ x.name }}</option>
+                {% endfor %}
+                {% for y in cards %}
+                <option>{{ y.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>

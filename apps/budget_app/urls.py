@@ -1,0 +1,30 @@
+from django.conf.urls import url
+from . import views
+
+urlpatterns =[
+    url(r'^$', views.root),
+    url(r'^accountname$', views.account_name),
+    url(r'^cardname$', views.card_name),
+    url(r'^edit/cardname$', views.edit_card_name),
+    url(r'^edit/accountname$', views.edit_account_name),
+    url(r'^payment$', views.payment),
+    url(r'^deposit$', views.deposit),
+    url(r'^purchase$', views.purchase),
+    url(r'^withdraw$', views.withdraw),
+    url(r'^update/cards$', views.update_cards),
+    url(r'^update/card$', views.update_card),
+    url(r'^update/accounts$', views.update_accounts),
+    url(r'^update/account$', views.update_account),
+    url(r'^update/transactions$', views.update_tran),
+    url(r'^add/payment$', views.add_payment),
+    url(r'^add/purchase$', views.add_purchase),
+    url(r'^add/withdraw$', views.add_withdraw),
+    url(r'^add/deposit$', views.add_deposit),
+    url(r'^create/account$', views.create_account),
+    url(r'^create/card$', views.create_card),
+    url(r'^delete/card/(?P<id>[1-9]+[0-9]*)$', views.delete_card),
+    url(r'^edit/card/(?P<id>[1-9]+[0-9]*)$', views.edit_card),
+    url(r'^edit/account/(?P<id>[1-9]+[0-9]*)$', views.edit_account),
+    url(r'^delete/account/(?P<id>[1-9]+[0-9]*)$', views.delete_account),
+    url(r'^delete/transaction/(?P<id>[1-9]+[0-9]*)$', views.delete_tran),
+]

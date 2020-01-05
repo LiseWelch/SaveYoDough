@@ -1,0 +1,13 @@
+
+{% if messages %}
+<ul class="messages mt-1 p-0" style="list-style-position: outside; color: rgb(255,74,165); display: inline-block; list-style: none;">
+    {% for message in messages %}
+        {% if message.extra_tags == 'card_name' %}
+            <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        {% endif %}
+    {% endfor %} 
+</ul>
+<input type="hidden" id="edit_c_valid" name="edit_c_valid" value="no">
+{% else %}
+<input type="hidden" id="edit_c_valid" name="edit_c_valid" value="yes">
+{% endif %}

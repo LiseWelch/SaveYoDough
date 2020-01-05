@@ -1,0 +1,24 @@
+<table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Balance</th>
+                <th scope="col">Last Updated</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in cards %}
+                <tr>
+                    <td>{{ c.name }}</td>
+                    {% load humanize %}
+                    <td>${{ c.balance|intcomma }}</td>
+                    <td>{{ c.updated_at }}</td>
+                    <td>
+                        <!-- <a id="edit_card" href="javascript:card_edit('{{ c.id }}')" style="color: rgb(255,74,165);">Edit</a> |  -->
+                        <a id="delete_card" style="color: rgb(255,74,165);" href="javascript:card_del('{{ c.id }}')">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
