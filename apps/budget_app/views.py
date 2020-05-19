@@ -122,35 +122,35 @@ def delete_tran(request, id):
 
 def delete_tran_logic(tran):
     if tran.t_type == "deposit":
-        account = Account.objects.get(name=tran.account_to)
-        if account:
-            account.balance -= tran.amount
-            account.save()
+        account = Account.objects.filter(name=tran.account_to)
+        if len(account)>0:
+            account[0].balance -= tran.amount
+            account[0].save()
     elif tran.t_type == "withdraw":
-        account = Account.objects.get(name=tran.account_to)
-        if account:
-            account.balance += tran.amount
-            account.save()
+        account = Account.objects.filter(name=tran.account_to)
+        if len(account)>0:
+            account[0].balance += tran.amount
+            account[0].save()
     elif tran.t_type == "purchase":
         if tran.account_from :
-            account = Account.objects.get(name=tran.account_from)
-            if account:
-                account.balance += tran.amount
-                account.save()
+            account = Account.objects.filter(name=tran.account_from)
+            if len(account)>0:
+                account[0].balance += tran.amount
+                account[0].save()
         else :
-            card = Card.objects.get(name=tran.card_from)
-            if card:
-                card.balance -= tran.amount
-                card.save()
+            card = Card.objects.filter(name=tran.card_from)
+            if len(card)>0:
+                card[0].balance -= tran.amount
+                card[0].save()
     else :
-        account = Account.objects.get(name=tran.account_from)
-        if account:
-            account.balance += tran.amount
-            account.save()
-        card = Card.objects.get(name=tran.card_to)
-        if card:
-            card.balance += tran.amount
-            card.save()
+        card = Card.objects.filter(name=tran.card_to)
+        if len(card)>0:
+            card[0].balance += tran.amount
+            card[0].save()
+        account = Account.objects.filter(name=tran.account_from)
+        if len(account)>0:
+            account[0].balance += tran.amount
+            account[0].save()
     tran.delete()
     
 def add_purchase(request):
