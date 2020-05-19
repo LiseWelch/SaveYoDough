@@ -22,10 +22,10 @@
         <div class="container-fluid p-0 m-0">
             <nav class="navbar" style="background-image: linear-gradient(rgb(251, 248, 17),rgb(216, 203, 21)); border-bottom: 4px solid black; width: 101%;">
                 {% load static %}
-                <img src="{% static 'budget_app/img/logo1.png' %}"  width="75" class="d-inline-block align-top my-1"alt="My image">  
+                <img src="{% static 'budget_app/img/Logo1.png' %}"  width="75" class="d-inline-block align-top my-1"alt="My image">  
                 <div class="row align-items-center">
                 <h2 class="text-right mx-4 mt-2">Welcome {{ user.first_name }}</h2>
-                <a href="http://localhost:8000/logout">
+                <a href="/logout">
                 <button type="button" id="logout"class="btn my-3 mr-5 text-white border border-dark" style="background-image: linear-gradient(rgb(253,164,196) 10%,rgb(255,74,165) 60%, rgb(253,164,196)); box-shadow: 2px 2px 2px black;">LOG OUT</button>
                 </a>
             </div>
@@ -52,16 +52,16 @@
                                     {% load humanize %}
                                     <td>${{ t.amount|intcomma }}</td>
                                     {% if t.card_to %}
-                                        <td>{{ t.card_to.name }}</td>
+                                        <td>{{ t.card_to }}</td>
                                     {% elif t.account_to %}
-                                        <td>{{ t.account_to.name }}</td>
+                                        <td>{{ t.account_to }}</td>
                                     {% else %}
                                         <td> </td>
                                     {% endif %}
                                     {% if t.card_from %}
-                                        <td>{{ t.card_from.name }}</td>
+                                        <td>{{ t.card_from }}</td>
                                     {% elif t.account_from %}
-                                        <td>{{ t.account_from.name }}</td>
+                                        <td>{{ t.account_from }}</td>
                                     {% else %}
                                         <td> </td>
                                     {% endif %}

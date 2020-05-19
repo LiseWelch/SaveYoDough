@@ -17,16 +17,16 @@
                     {% load humanize %}
                     <td>${{ t.amount|intcomma }}</td>
                     {% if t.card_to %}
-                        <td>{{ t.card_to.name }}</td>
+                        <td>{{ t.card_to }}</td>
                     {% elif t.account_to %}
-                        <td>{{ t.account_to.name }}</td>
+                        <td>{{ t.account_to }}</td>
                     {% else %}
                         <td></td>
                     {% endif %}
                     {% if t.card_from %}
-                        <td>{{ t.card_from.name }}</td>
+                        <td>{{ t.card_from }}</td>
                     {% elif t.account_from %}
-                        <td>{{ t.account_from.name }}</td>
+                        <td>{{ t.account_from }}</td>
                     {% else %}
                         <td></td>
                     {% endif %}

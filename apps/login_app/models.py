@@ -47,7 +47,7 @@ class UserManager(models.Manager):
             errors['email'] = "Email cannot be left blank"
             return errors
         if len(user) != 0 :
-            errors['email_unique'] = "User with this e-mail alread exist"
+            errors['email_unique'] = "User with this e-mail already exist"
         if not EMAIL_REGEX.match(postData['email']):
             errors['email_valid'] = "Invalid e-mail address"
         return errors

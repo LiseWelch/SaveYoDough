@@ -122,29 +122,35 @@ def delete_tran(request, id):
 
 def delete_tran_logic(tran):
     if tran.t_type == "deposit":
-        account = tran.account_to
-        account.balance -= tran.amount
-        account.save()
+        account = Account.objects.get(name=tran.account_to)
+        if account:
+            account.balance -= tran.amount
+            account.save()
     elif tran.t_type == "withdraw":
-        account = tran.account_to
-        account.balance += tran.amount
-        account.save()
-    elif tran.t_type == "purchase":
-        if tran.account_from :
-            account = tran.account_from
+        account = Account.objects.get(name=tran.account_to)
+        if account:
             account.balance += tran.amount
             account.save()
+    elif tran.t_type == "purchase":
+        if tran.account_from :
+            account = Account.objects.get(name=tran.account_from)
+            if account:
+                account.balance += tran.amount
+                account.save()
         else :
-            card = tran.card_from
-            card.balance -= tran.amount
-            card.save()
+            card = Card.objects.get(name=tran.card_from)
+            if card:
+                card.balance -= tran.amount
+                card.save()
     else :
-        account = tran.account_from
-        account.balance += tran.amount
-        account.save()
-        card = tran.card_to
-        card.balance += tran.amount
-        card.save()
+        account = Account.objects.get(name=tran.account_from)
+        if account:
+            account.balance += tran.amount
+            account.save()
+        card = Card.objects.get(name=tran.card_to)
+        if card:
+            card.balance += tran.amount
+            card.save()
     tran.delete()
     
 def add_purchase(request):
@@ -154,13 +160,13 @@ def add_purchase(request):
         for c in card :
             c.balance += Decimal(request.POST['amount'])
             c.save()
-            Transaction.objects.create(desc=request.POST['desc'], amount=request.POST['amount'], t_type="purchase", card_from=c, user=user)
+            Transaction.objects.create(desc=request.POST['desc'], amount=request.POST['amount'], t_type="purchase", card_from=request.POST['on'], user=user)
     else :
         account = user.accounts.filter(name=request.POST["on"])
         for a in account :
             a.balance -= Decimal(request.POST['amount'])
             a.save()
-            Transaction.objects.create(desc=request.POST['desc'], amount=request.POST['amount'], t_type="purchase", account_from=a, user=user)
+            Transaction.objects.create(desc=request.POST['desc'], amount=request.POST['amount'], t_type="purchase", account_from=request.POST['on'], user=user)
     context = {
         "user": user,
         "transactions" : user.transactions.all().order_by("-created_at"),
@@ -172,7 +178,7 @@ def add_purchase(request):
 def add_deposit(request):
     user = User.objects.get(id=request.session['userid'])
     deposit = user.accounts.get(name=request.POST['to'])
-    Transaction.objects.create(desc=request.POST['desc'], amount=request.POST['amount'], t_type="deposit", account_to=deposit, user=user)
+    Transaction.objects.create(desc=request.POST['desc'], amount=request.POST['amount'], t_type="deposit", account_to=request.POST['to'], user=user)
     deposit.balance += Decimal(request.POST['amount'])
     deposit.save()
     context = {
@@ -186,7 +192,7 @@ def add_deposit(request):
 def add_withdraw(request):
     user = User.objects.get(id=request.session['userid'])
     withdraw = user.accounts.get(name=request.POST['from'])
-    Transaction.objects.create(desc=request.POST['desc'], amount=request.POST['amount'], t_type="withdraw", account_to=withdraw, user=user)
+    Transaction.objects.create(desc=request.POST['desc'], amount=request.POST['amount'], t_type="withdraw", account_to=request.POST['from'], user=user)
     withdraw.balance -= Decimal(request.POST['amount'])
     withdraw.save()
     context = {
@@ -205,7 +211,7 @@ def add_payment(request):
     card.save()
     account.balance -= Decimal(request.POST['amount'])
     account.save()
-    Transaction.objects.create(desc=request.POST['desc'], amount=request.POST['amount'], t_type="payment", card_to=card, account_from=account,user=user)
+    Transaction.objects.create(desc=request.POST['desc'], amount=request.POST['amount'], t_type="payment", card_to=request.POST['payment_to'], account_from=request.POST['payment_from'],user=user)
     context = {
         "transactions" : user.transactions.all().order_by("-created_at"),
     }

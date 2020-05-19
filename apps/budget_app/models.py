@@ -89,14 +89,11 @@ class Transaction(models.Model) :
     desc = models.CharField(max_length = 255)
     amount = models.DecimalField(max_digits = 15, decimal_places = 2)
     t_type = models.CharField(max_length = 15)
-    account_to = models.ForeignKey(Account, related_name="incoming_transactions", default = None, null=True)
-    card_to = models.ForeignKey(Card, related_name="incoming_transactions", default = None, null=True)
-    account_from = models.ForeignKey(Account, related_name="outgoing_transactions", default = None, null=True)
-    card_from = models.ForeignKey(Card, related_name="outgoing_transactions", default = None, null=True)
+    account_to = models.CharField(max_length = 255, default = None, null=True)
+    card_to = models.CharField(max_length = 255, default = None, null=True)
+    account_from = models.CharField(max_length = 255, default = None, null=True)
+    card_from = models.CharField(max_length = 255, default = None, null=True)
     user = models.ForeignKey(User, related_name="transactions")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-
-
-# Create your models here.
